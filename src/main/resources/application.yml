@@ -32,6 +32,13 @@ spring:
 server:
   port: 8080
 
+app:
+  jwt:
+    secret: ${JWT_SECRET:default-secret-key-please-change-in-production-environment-this-must-be-at-least-256-bits}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  allowed-domain: ${ALLOWED_DOMAIN:example.com}
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+
 logging:
   level:
     com.recipe.manager: DEBUG

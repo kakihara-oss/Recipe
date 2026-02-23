@@ -1,6 +1,6 @@
 package com.recipe.manager.controller;
 
-import com.recipe.manager.config.SecurityConfig;
+import com.recipe.manager.config.TestSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(HealthController.class)
-@Import(SecurityConfig.class)
+@Import(TestSecurityConfig.class)
 class HealthControllerTest {
 
     @Autowired

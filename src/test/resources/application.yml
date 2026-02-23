@@ -22,3 +22,10 @@ spring:
           google:
             client-id: test-client-id
             client-secret: test-client-secret
+
+app:
+  jwt:
+    secret: test-secret-key-for-testing-purposes-only-must-be-at-least-256-bits-long-enough
+    expiration-ms: 86400000
+  allowed-domain: example.com
+  frontend-url: http://localhost:3000
