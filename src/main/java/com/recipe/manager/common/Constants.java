@@ -31,4 +31,10 @@ public final class Constants {
     public static final String SUPPLY_LIMITED = "LIMITED";
     public static final String SUPPLY_UNAVAILABLE = "UNAVAILABLE";
     public static final String SUPPLY_SEASONAL = "SEASONAL";
+
+    // Feedback
+    public static final int MIN_SATISFACTION_SCORE = 1;
+    public static final int MAX_SATISFACTION_SCORE = 5;
+    public static final int MIN_EMOTION_SCORE = 1;
+    public static final int MAX_EMOTION_SCORE = 5;
 }
