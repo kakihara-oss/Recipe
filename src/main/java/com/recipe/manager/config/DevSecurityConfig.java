@@ -1,14 +1,11 @@
 package com.recipe.manager.config;
 
-import com.recipe.manager.common.Constants;
 import com.recipe.manager.security.JwtAuthenticationFilter;
 import com.recipe.manager.security.JwtTokenProvider;
-import com.recipe.manager.security.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,11 +17,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
-@Profile("!dev")
-public class SecurityConfig {
+@Profile("dev")
+public class DevSecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,17 +29,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/health").permitAll()
-                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/users/*/role")
-                            .hasRole(Constants.ROLE_PRODUCER)
-                        .requestMatchers(HttpMethod.GET, "/api/users")
-                            .hasRole(Constants.ROLE_PRODUCER)
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/dev/**").permitAll()
+                        .anyRequest().permitAll()
                 )
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                )
+                .oauth2Login(oauth2 -> oauth2.disable())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class);
 

@@ -1,0 +1,13 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: dev-dummy-client-id
+            client-secret: dev-dummy-client-secret
+
+logging:
+  level:
+    com.recipe.manager: DEBUG
+    org.springframework.security: DEBUG
