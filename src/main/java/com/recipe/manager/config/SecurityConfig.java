@@ -46,7 +46,9 @@ public class SecurityConfig {
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authorizeHttpRequests(auth -> auth
                             .anyRequest().permitAll()
-                    );
+                    )
+                    .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                            UsernamePasswordAuthenticationFilter.class);
         } else {
             log.info("Production profile: configuring OAuth2 + JWT security");
             http
