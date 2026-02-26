@@ -1,15 +1,13 @@
 package com.recipe.manager.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -18,49 +16,44 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "ingredients")
+@Table(name = "store_monthly_food_costs")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Ingredient {
+public class StoreMonthlyFoodCost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
-    @Column(length = 100)
-    private String category;
+    @Column(name = "sales_month", nullable = false, length = 7)
+    private String salesMonth;
 
-    @Column(name = "standard_unit", length = 50)
-    private String standardUnit;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "supply_status", nullable = false)
+    @Column(name = "theoretical_food_cost", nullable = false, precision = 12, scale = 2)
     @Builder.Default
-    private SupplyStatus supplyStatus = SupplyStatus.AVAILABLE;
+    private BigDecimal theoreticalFoodCost = BigDecimal.ZERO;
 
-    @Column(length = 255)
-    private String supplier;
-
-    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("effectiveFrom DESC")
+    @Column(name = "total_sales", nullable = false, precision = 12, scale = 2)
     @Builder.Default
-    private List<IngredientPrice> prices = new ArrayList<>();
+    private BigDecimal totalSales = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("month ASC")
+    @Column(name = "theoretical_food_cost_rate", nullable = false, precision = 5, scale = 2)
     @Builder.Default
-    private List<IngredientSeason> seasons = new ArrayList<>();
+    private BigDecimal theoreticalFoodCostRate = BigDecimal.ZERO;
+
+    @Column(name = "calculated_at", nullable = false)
+    @Builder.Default
+    private LocalDateTime calculatedAt = LocalDateTime.now();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default

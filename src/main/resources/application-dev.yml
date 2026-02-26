@@ -1,0 +1,9 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
+
+logging:
+  level:
+    com.recipe.manager: DEBUG
+    org.springframework.security: DEBUG
