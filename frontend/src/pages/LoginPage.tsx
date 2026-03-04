@@ -1,8 +1,25 @@
+import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import apiClient from '../api/client'
+
+const DEV_ROLES = ['PRODUCER', 'CHEF', 'SERVICE', 'PURCHASER'] as const
 
 export default function LoginPage() {
-  const { user, loading } = useAuth()
+  const { user, loading, login } = useAuth()
+  const [devLoading, setDevLoading] = useState(false)
+
+  const handleDevLogin = async (role: string) => {
+    setDevLoading(true)
+    try {
+      const { data } = await apiClient.post('/dev/login', { role })
+      login(data.token)
+    } catch {
+      alert('開発用ログインに失敗しました。バックエンドが dev プロファイルで起動しているか確認してください。')
+    } finally {
+      setDevLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -49,6 +66,24 @@ export default function LoginPage() {
           </svg>
           Googleアカウントでログイン
         </a>
+
+        <div className="mt-6 border-t pt-6">
+          <p className="mb-3 text-center text-xs text-gray-400">
+            開発用ログイン（devプロファイル時のみ有効）
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {DEV_ROLES.map((role) => (
+              <button
+                key={role}
+                onClick={() => handleDevLogin(role)}
+                disabled={devLoading}
+                className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+              >
+                {role}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   )
