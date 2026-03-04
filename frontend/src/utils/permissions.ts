@@ -28,6 +28,10 @@ export function canCreateFeedback(role: Role): boolean {
   return role === 'CHEF' || role === 'SERVICE' || role === 'PRODUCER'
 }
 
+export function canViewCost(role: Role): boolean {
+  return role === 'CHEF' || role === 'PURCHASER' || role === 'PRODUCER'
+}
+
 export function canManageUsers(role: Role): boolean {
   return role === 'PRODUCER'
 }

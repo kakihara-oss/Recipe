@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCreateRecipe } from '../../hooks/useRecipes'
+import { useIngredients } from '../../hooks/useIngredients'
 import AiGenerateButton from '../../components/recipe/AiGenerateButton'
 import AiGenerateFromRecipeButton from '../../components/recipe/AiGenerateFromRecipeButton'
 import type { CreateRecipeRequest, AiRecipeDraftResponse } from '../../types'
@@ -11,6 +12,14 @@ interface StepInput {
   durationMinutes: string
   temperature: string
   tips: string
+}
+
+interface IngredientInput {
+  ingredientId: string
+  quantity: string
+  unit: string
+  preparationNote: string
+  substitutes: string
 }
 
 export default function RecipeCreatePage() {
@@ -26,6 +35,10 @@ export default function RecipeCreatePage() {
   const [steps, setSteps] = useState<StepInput[]>([
     { stepNumber: 1, description: '', durationMinutes: '', temperature: '', tips: '' },
   ])
+  const [ingredientInputs, setIngredientInputs] = useState<IngredientInput[]>([])
+  const [ingredientSearch, setIngredientSearch] = useState('')
+
+  const { data: ingredientsList } = useIngredients({ keyword: ingredientSearch || undefined, size: 100 })
 
   const applyAiDraft = (draft: AiRecipeDraftResponse) => {
     if (draft.title) setTitle(draft.title)
@@ -64,6 +77,18 @@ export default function RecipeCreatePage() {
     setSteps(steps.map((s, i) => i === index ? { ...s, [field]: value } as StepInput : s))
   }
 
+  const addIngredient = () => {
+    setIngredientInputs([...ingredientInputs, { ingredientId: '', quantity: '', unit: '', preparationNote: '', substitutes: '' }])
+  }
+
+  const removeIngredient = (index: number) => {
+    setIngredientInputs(ingredientInputs.filter((_, i) => i !== index))
+  }
+
+  const updateIngredient = (index: number, field: keyof IngredientInput, value: string) => {
+    setIngredientInputs(ingredientInputs.map((ing, i) => i === index ? { ...ing, [field]: value } : ing))
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const req: CreateRecipeRequest = {
@@ -81,6 +106,15 @@ export default function RecipeCreatePage() {
           durationMinutes: s.durationMinutes ? Number(s.durationMinutes) : undefined,
           temperature: s.temperature || undefined,
           tips: s.tips || undefined,
+        })),
+      ingredients: ingredientInputs
+        .filter((ing) => ing.ingredientId)
+        .map((ing) => ({
+          ingredientId: Number(ing.ingredientId),
+          quantity: ing.quantity ? Number(ing.quantity) : undefined,
+          unit: ing.unit || undefined,
+          preparationNote: ing.preparationNote || undefined,
+          substitutes: ing.substitutes || undefined,
         })),
     }
     createMutation.mutate(req, {
@@ -215,7 +249,86 @@ export default function RecipeCreatePage() {
           </button>
         </div>
 
-        {/* AI generated ingredients info */}
+        {/* Ingredients */}
+        <div>
+          <h3 className="mb-3 text-lg font-semibold text-gray-700">食材</h3>
+          {ingredientInputs.map((ing, index) => (
+            <div key={index} className="mb-3 rounded-lg border border-gray-200 p-4">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-600">食材 {index + 1}</span>
+                <button type="button" onClick={() => removeIngredient(index)} className="text-xs text-red-500 hover:underline">
+                  削除
+                </button>
+              </div>
+              <div className="mb-2">
+                <select
+                  value={ing.ingredientId}
+                  onChange={(e) => updateIngredient(index, 'ingredientId', e.target.value)}
+                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                >
+                  <option value="">食材を選択...</option>
+                  {ingredientsList?.content.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}{item.category ? ` (${item.category})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  placeholder="数量"
+                  value={ing.quantity}
+                  onChange={(e) => updateIngredient(index, 'quantity', e.target.value)}
+                  step="0.1"
+                  min="0"
+                  className="rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="単位 (例: g, 個, 本)"
+                  value={ing.unit}
+                  onChange={(e) => updateIngredient(index, 'unit', e.target.value)}
+                  className="rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  placeholder="下処理メモ"
+                  value={ing.preparationNote}
+                  onChange={(e) => updateIngredient(index, 'preparationNote', e.target.value)}
+                  className="rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="代替食材"
+                  value={ing.substitutes}
+                  onChange={(e) => updateIngredient(index, 'substitutes', e.target.value)}
+                  className="rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                />
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addIngredient}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            + 食材を追加
+          </button>
+          {ingredientInputs.length > 0 && (
+            <div className="mt-2">
+              <input
+                type="text"
+                placeholder="食材名で絞り込み..."
+                value={ingredientSearch}
+                onChange={(e) => setIngredientSearch(e.target.value)}
+                className="rounded border border-gray-300 px-2 py-1.5 text-xs text-gray-500 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+          )}
+        </div>
 
         <div className="flex justify-end gap-3 pt-4">
           <button

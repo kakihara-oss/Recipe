@@ -25,6 +25,12 @@ import KnowledgeEditPage from './pages/knowledge/KnowledgeEditPage'
 import AiConsultationPage from './pages/ai/AiConsultationPage'
 import AiNewThreadPage from './pages/ai/AiNewThreadPage'
 
+// Ingredient pages
+import IngredientListPage from './pages/ingredients/IngredientListPage'
+import IngredientCreatePage from './pages/ingredients/IngredientCreatePage'
+import IngredientDetailPage from './pages/ingredients/IngredientDetailPage'
+import IngredientEditPage from './pages/ingredients/IngredientEditPage'
+
 // Feedback pages
 import FeedbackListPage from './pages/feedback/FeedbackListPage'
 import FeedbackCreatePage from './pages/feedback/FeedbackCreatePage'
@@ -71,6 +77,12 @@ export default function App() {
         <Route path="/ai" element={<AiConsultationPage />} />
         <Route path="/ai/new" element={<AiNewThreadPage />} />
         <Route path="/ai/threads/:threadId" element={<AiConsultationPage />} />
+
+        {/* Ingredient routes */}
+        <Route path="/ingredients" element={<IngredientListPage />} />
+        <Route path="/ingredients/new" element={<IngredientCreatePage />} />
+        <Route path="/ingredients/:id" element={<IngredientDetailPage />} />
+        <Route path="/ingredients/:id/edit" element={<IngredientEditPage />} />
 
         {/* Feedback routes */}
         <Route path="/feedbacks" element={<FeedbackListPage />} />

@@ -2,13 +2,15 @@ package com.recipe.manager.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,41 +20,32 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ingredients")
+@Table(name = "ingredient_seasons", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"ingredient_id", "month"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Ingredient {
+public class IngredientSeason {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ingredient_id", nullable = false)
+    private Ingredient ingredient;
+
     @Column(nullable = false)
-    private String name;
+    private Integer month;
 
-    @Column(length = 100)
-    private String category;
+    @Column(name = "availability_rank", nullable = false, length = 20)
+    private String availabilityRank;
 
-    @Column(name = "standard_unit", length = 50)
-    private String standardUnit;
-
-    @Column(name = "seasonal_flag", nullable = false)
-    @Builder.Default
-    private Boolean seasonalFlag = false;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "supply_status", nullable = false, length = 50)
-    @Builder.Default
-    private SupplyStatus supplyStatus = SupplyStatus.AVAILABLE;
-
-    @Column(length = 200)
-    private String supplier;
-
-    @Column(name = "image_url", length = 1024)
-    private String imageUrl;
+    @Column(name = "quality_note", length = 500)
+    private String qualityNote;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default

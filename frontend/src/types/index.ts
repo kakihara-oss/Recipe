@@ -313,6 +313,104 @@ export interface UpdateRoleRequest {
   role: Role
 }
 
+// ===== Ingredient Master =====
+
+export interface IngredientResponse {
+  id: number
+  name: string
+  category: string | null
+  standardUnit: string | null
+  seasonalFlag: boolean
+  supplyStatus: SupplyStatus
+  supplier: string | null
+  imageUrl: string | null
+  currentPrice: IngredientPriceResponse | null
+  prices: IngredientPriceResponse[]
+  seasons: IngredientSeasonResponse[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface IngredientListResponse {
+  id: number
+  name: string
+  category: string | null
+  standardUnit: string | null
+  supplyStatus: SupplyStatus
+  imageUrl: string | null
+  currentUnitPrice: number | null
+  updatedAt: string
+}
+
+export interface IngredientPriceResponse {
+  id: number
+  unitPrice: number
+  pricePerUnit: string | null
+  effectiveFrom: string
+  effectiveTo: string | null
+}
+
+export interface IngredientSeasonResponse {
+  id: number
+  month: number
+  availabilityRank: string
+  qualityNote: string | null
+}
+
+export interface RecipeCostResponse {
+  id: number
+  recipeId: number
+  recipeTitle: string
+  totalIngredientCost: number | null
+  targetMarginRate: number | null
+  recommendedPrice: number | null
+  currentPrice: number | null
+  lastCalculatedAt: string | null
+}
+
+export interface AffectedRecipeResponse {
+  recipeId: number
+  recipeTitle: string
+  previousCost: number | null
+  newCost: number | null
+}
+
+export interface CreateIngredientRequest {
+  name: string
+  category?: string
+  standardUnit?: string
+  seasonalFlag?: boolean
+  supplyStatus?: SupplyStatus
+  supplier?: string
+}
+
+export interface UpdateIngredientRequest {
+  name?: string
+  category?: string
+  standardUnit?: string
+  seasonalFlag?: boolean
+  supplyStatus?: SupplyStatus
+  supplier?: string
+}
+
+export interface CreateIngredientPriceRequest {
+  unitPrice: number
+  pricePerUnit?: string
+  effectiveFrom: string
+  effectiveTo?: string
+}
+
+export interface UpdateIngredientSeasonRequest {
+  month: number
+  availabilityRank: string
+  qualityNote?: string
+}
+
+export interface UpdateRecipeCostRequest {
+  targetMarginRate?: number
+  currentPrice?: number
+}
+
 // ===== File Upload =====
 
 export interface FileUploadResponse {

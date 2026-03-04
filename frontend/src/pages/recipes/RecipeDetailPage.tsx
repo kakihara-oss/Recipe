@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useRecipe, useUpdateRecipeStatus, useDeleteRecipe } from '../../hooks/useRecipes'
+import { useRecipeCost, useCalculateRecipeCost, useUpdateRecipeCost } from '../../hooks/useRecipeCost'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   canEditRecipe,
@@ -8,12 +9,13 @@ import {
   canEditExperienceDesign,
   canChangeRecipeStatus,
   canDeleteRecipe,
+  canViewCost,
 } from '../../utils/permissions'
 import RecipeStatusBadge from '../../components/recipe/RecipeStatusBadge'
 import ImageUpload from '../../components/common/ImageUpload'
 import type { RecipeStatus } from '../../types'
 
-type Tab = 'basic' | 'steps' | 'service' | 'experience'
+type Tab = 'basic' | 'steps' | 'service' | 'experience' | 'cost'
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -21,9 +23,14 @@ export default function RecipeDetailPage() {
   const { user } = useAuth()
   const recipeId = Number(id)
   const { data: recipe, isLoading } = useRecipe(recipeId)
+  const { data: recipeCost } = useRecipeCost(recipeId)
+  const calculateCostMutation = useCalculateRecipeCost(recipeId)
+  const updateCostMutation = useUpdateRecipeCost(recipeId)
   const statusMutation = useUpdateRecipeStatus(recipeId)
   const deleteMutation = useDeleteRecipe()
   const [tab, setTab] = useState<Tab>('basic')
+  const [costTargetMarginRate, setCostTargetMarginRate] = useState('')
+  const [costCurrentPrice, setCostCurrentPrice] = useState('')
 
   if (isLoading) return <div className="py-12 text-center text-gray-500">読み込み中...</div>
   if (!recipe) return <div className="py-12 text-center text-gray-400">レシピが見つかりません</div>
@@ -44,11 +51,14 @@ export default function RecipeDetailPage() {
     }
   }
 
+  const showCostTab = role ? canViewCost(role) : false
+
   const tabs: { key: Tab; label: string }[] = [
     { key: 'basic', label: '基本情報' },
     { key: 'steps', label: '調理手順' },
     { key: 'service', label: 'サービス設計' },
     { key: 'experience', label: '体験設計' },
+    ...(showCostTab ? [{ key: 'cost' as Tab, label: '原価' }] : []),
   ]
 
   return (
@@ -298,6 +308,111 @@ export default function RecipeDetailPage() {
             ) : (
               <p className="text-gray-400">体験設計が登録されていません</p>
             )}
+          </div>
+        )}
+
+        {tab === 'cost' && (
+          <div className="space-y-6">
+            {/* Current cost info */}
+            <div>
+              <h4 className="mb-3 text-sm font-semibold text-gray-600">原価情報</h4>
+              {recipeCost ? (
+                <dl className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <dt className="text-gray-500">食材原価合計</dt>
+                    <dd className="text-lg font-medium text-gray-800">
+                      {recipeCost.totalIngredientCost != null ? `¥${recipeCost.totalIngredientCost.toLocaleString()}` : '未計算'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">目標粗利率</dt>
+                    <dd className="text-lg font-medium text-gray-800">
+                      {recipeCost.targetMarginRate != null ? `${recipeCost.targetMarginRate}%` : '未設定'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">推奨売価</dt>
+                    <dd className="text-lg font-medium text-gray-800">
+                      {recipeCost.recommendedPrice != null ? `¥${recipeCost.recommendedPrice.toLocaleString()}` : '-'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">現在売価</dt>
+                    <dd className="text-lg font-medium text-gray-800">
+                      {recipeCost.currentPrice != null ? `¥${recipeCost.currentPrice.toLocaleString()}` : '未設定'}
+                    </dd>
+                  </div>
+                  {recipeCost.lastCalculatedAt && (
+                    <div className="col-span-2">
+                      <dt className="text-gray-500">最終計算日時</dt>
+                      <dd className="text-gray-600">{new Date(recipeCost.lastCalculatedAt).toLocaleString('ja-JP')}</dd>
+                    </div>
+                  )}
+                </dl>
+              ) : (
+                <p className="text-gray-400">原価情報が登録されていません。「原価計算」ボタンで計算してください。</p>
+              )}
+            </div>
+
+            {/* Recalculate button */}
+            <div>
+              <button
+                onClick={() => calculateCostMutation.mutate()}
+                disabled={calculateCostMutation.isPending}
+                className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+              >
+                {calculateCostMutation.isPending ? '計算中...' : '原価を再計算'}
+              </button>
+            </div>
+
+            {/* Update cost settings */}
+            <div className="border-t pt-4">
+              <h4 className="mb-3 text-sm font-semibold text-gray-600">原価設定</h4>
+              <div className="flex flex-wrap items-end gap-3">
+                <div>
+                  <label className="mb-1 block text-xs text-gray-500">目標粗利率 (%)</label>
+                  <input
+                    type="number"
+                    value={costTargetMarginRate}
+                    onChange={(e) => setCostTargetMarginRate(e.target.value)}
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    placeholder={recipeCost?.targetMarginRate?.toString() ?? '70'}
+                    className="w-28 rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-gray-500">現在売価 (円)</label>
+                  <input
+                    type="number"
+                    value={costCurrentPrice}
+                    onChange={(e) => setCostCurrentPrice(e.target.value)}
+                    step="1"
+                    min="0"
+                    placeholder={recipeCost?.currentPrice?.toString() ?? ''}
+                    className="w-32 rounded border border-gray-300 px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    updateCostMutation.mutate({
+                      targetMarginRate: costTargetMarginRate ? Number(costTargetMarginRate) : undefined,
+                      currentPrice: costCurrentPrice ? Number(costCurrentPrice) : undefined,
+                    }, {
+                      onSuccess: () => {
+                        setCostTargetMarginRate('')
+                        setCostCurrentPrice('')
+                      },
+                    })
+                  }}
+                  disabled={updateCostMutation.isPending || (!costTargetMarginRate && !costCurrentPrice)}
+                  className="rounded bg-green-600 px-3 py-1.5 text-sm text-white hover:bg-green-700 disabled:opacity-50"
+                >
+                  {updateCostMutation.isPending ? '保存中...' : '設定を保存'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
