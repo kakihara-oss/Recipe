@@ -457,6 +457,55 @@ export interface AiGenerateFromRecipeRequest {
   arrangementInstruction?: string
 }
 
+// ===== Store & Sales =====
+
+export interface StoreResponse {
+  id: number
+  storeCode: string
+  name: string
+  location: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateStoreRequest {
+  storeCode: string
+  name: string
+  location?: string
+}
+
+export interface UpdateStoreRequest {
+  name?: string
+  location?: string
+}
+
+export interface MonthlySalesResponse {
+  id: number
+  storeId: number
+  storeName: string
+  recipeId: number
+  recipeTitle: string
+  targetMonth: string
+  quantity: number
+  salesAmount: number
+}
+
+export interface StoreMonthlyFoodCostResponse {
+  id: number
+  storeId: number
+  storeName: string
+  targetMonth: string
+  theoreticalFoodCost: number
+  totalSales: number
+  theoreticalFoodCostRate: number
+}
+
+export interface CsvUploadResponse {
+  importedCount: number
+  skippedCount: number
+  errors: string[]
+}
+
 export interface AiImproveFieldRequest {
   fieldName: string
   currentValue?: string

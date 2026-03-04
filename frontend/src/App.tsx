@@ -31,6 +31,12 @@ import IngredientCreatePage from './pages/ingredients/IngredientCreatePage'
 import IngredientDetailPage from './pages/ingredients/IngredientDetailPage'
 import IngredientEditPage from './pages/ingredients/IngredientEditPage'
 
+// Store & Sales pages
+import StoreListPage from './pages/stores/StoreListPage'
+import StoreDetailPage from './pages/stores/StoreDetailPage'
+import SalesUploadPage from './pages/stores/SalesUploadPage'
+import StoreComparisonPage from './pages/stores/StoreComparisonPage'
+
 // Feedback pages
 import FeedbackListPage from './pages/feedback/FeedbackListPage'
 import FeedbackCreatePage from './pages/feedback/FeedbackCreatePage'
@@ -83,6 +89,12 @@ export default function App() {
         <Route path="/ingredients/new" element={<IngredientCreatePage />} />
         <Route path="/ingredients/:id" element={<IngredientDetailPage />} />
         <Route path="/ingredients/:id/edit" element={<IngredientEditPage />} />
+
+        {/* Store & Sales routes */}
+        <Route path="/stores" element={<StoreListPage />} />
+        <Route path="/stores/:id" element={<StoreDetailPage />} />
+        <Route path="/sales/upload" element={<SalesUploadPage />} />
+        <Route path="/stores/comparison" element={<StoreComparisonPage />} />
 
         {/* Feedback routes */}
         <Route path="/feedbacks" element={<FeedbackListPage />} />
