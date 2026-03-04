@@ -39,6 +39,7 @@ export interface IngredientInfo {
   id: number
   ingredientId: number
   ingredientName: string
+  ingredientImageUrl: string | null
   quantity: number | null
   unit: string | null
   preparationNote: string | null
@@ -134,6 +135,7 @@ export interface KnowledgeArticleResponse {
   tags: string | null
   authorName: string
   authorId: number
+  imageUrl: string | null
   relatedRecipes: RelatedRecipeInfo[]
   createdAt: string
   updatedAt: string

@@ -56,8 +56,12 @@ export default function KnowledgeListPage() {
               <Link
                 key={article.id}
                 to={`/knowledge/${article.id}`}
-                className="block rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md"
+                className="flex gap-4 rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md"
               >
+                {article.imageUrl && (
+                  <img src={article.imageUrl} alt={article.title} className="h-16 w-16 flex-shrink-0 rounded object-cover" />
+                )}
+                <div className="min-w-0 flex-1">
                 <h3 className="mb-1 text-base font-semibold text-gray-800">{article.title}</h3>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
                   <span className="rounded bg-blue-50 px-2 py-0.5 text-blue-700">{article.categoryName}</span>
@@ -66,6 +70,7 @@ export default function KnowledgeListPage() {
                   )}
                   <span>投稿者: {article.authorName}</span>
                   <span>{new Date(article.updatedAt).toLocaleDateString('ja-JP')}</span>
+                </div>
                 </div>
               </Link>
             ))}

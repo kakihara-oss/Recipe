@@ -36,6 +36,8 @@ public class FileController {
             case "recipe" -> fileUploadService.uploadForRecipe(targetId, file, currentUser);
             case "cookingStep" -> fileUploadService.uploadForCookingStep(targetId, file, currentUser);
             case "serviceDesign" -> fileUploadService.uploadForServiceDesign(targetId, file, currentUser);
+            case "knowledgeArticle" -> fileUploadService.uploadForKnowledgeArticle(targetId, file, currentUser);
+            case "ingredient" -> fileUploadService.uploadForIngredient(targetId, file, currentUser);
             default -> throw new BusinessLogicException("不正なターゲット: " + target);
         };
 
@@ -59,6 +61,8 @@ public class FileController {
             case "recipe" -> fileUploadService.deleteForRecipe(targetId, currentUser);
             case "cookingStep" -> fileUploadService.deleteForCookingStep(targetId, currentUser);
             case "serviceDesign" -> fileUploadService.deleteForServiceDesign(targetId, currentUser);
+            case "knowledgeArticle" -> fileUploadService.deleteForKnowledgeArticle(targetId, currentUser);
+            case "ingredient" -> fileUploadService.deleteForIngredient(targetId, currentUser);
             default -> throw new BusinessLogicException("不正なターゲット: " + target);
         }
 

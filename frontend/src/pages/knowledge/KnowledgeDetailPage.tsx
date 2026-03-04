@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useArticle, useDeleteArticle } from '../../hooks/useKnowledge'
 import { useAuth } from '../../contexts/AuthContext'
+import ImageUpload from '../../components/common/ImageUpload'
 
 export default function KnowledgeDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -50,6 +51,23 @@ export default function KnowledgeDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Article image */}
+      {article.imageUrl && (
+        <div className="mb-4">
+          <img src={article.imageUrl} alt={article.title} className="h-64 w-full rounded-lg object-cover" />
+        </div>
+      )}
+      {canEdit && (
+        <div className="mb-4">
+          <ImageUpload
+            target="knowledgeArticle"
+            targetId={articleId}
+            currentImageUrl={article.imageUrl}
+            label="記事写真"
+          />
+        </div>
+      )}
 
       {/* Article content */}
       <div className="rounded-lg border border-gray-200 bg-white p-6">

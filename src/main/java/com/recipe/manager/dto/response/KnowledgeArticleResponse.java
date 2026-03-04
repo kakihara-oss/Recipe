@@ -20,6 +20,7 @@ public class KnowledgeArticleResponse {
     private final String tags;
     private final String authorName;
     private final Long authorId;
+    private final String imageUrl;
     private final List<RelatedRecipeInfo> relatedRecipes;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -51,6 +52,7 @@ public class KnowledgeArticleResponse {
                 .tags(article.getTags())
                 .authorName(article.getAuthor().getName())
                 .authorId(article.getAuthor().getId())
+                .imageUrl(article.getImageUrl())
                 .relatedRecipes(recipeInfos)
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())

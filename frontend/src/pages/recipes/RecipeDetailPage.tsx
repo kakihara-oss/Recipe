@@ -174,7 +174,14 @@ export default function RecipeDetailPage() {
                     <tbody>
                       {recipe.ingredients.map((ing) => (
                         <tr key={ing.id} className="border-t">
-                          <td className="px-3 py-2">{ing.ingredientName}</td>
+                          <td className="px-3 py-2">
+                            <div className="flex items-center gap-2">
+                              {ing.ingredientImageUrl && (
+                                <img src={ing.ingredientImageUrl} alt={ing.ingredientName} className="h-8 w-8 rounded object-cover" />
+                              )}
+                              {ing.ingredientName}
+                            </div>
+                          </td>
                           <td className="px-3 py-2">{ing.quantity ?? '-'}</td>
                           <td className="px-3 py-2">{ing.unit ?? '-'}</td>
                           <td className="px-3 py-2">{ing.preparationNote ?? '-'}</td>

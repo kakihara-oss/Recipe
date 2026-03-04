@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useArticle, useCategories, useUpdateArticle } from '../../hooks/useKnowledge'
+import ImageUpload from '../../components/common/ImageUpload'
 import type { UpdateKnowledgeArticleRequest } from '../../types'
 
 export default function KnowledgeEditPage() {
@@ -47,6 +48,14 @@ export default function KnowledgeEditPage() {
         &larr; 記事に戻る
       </Link>
       <h2 className="mb-6 text-2xl font-bold text-gray-800">ナレッジ記事編集</h2>
+      <div className="mb-6">
+        <ImageUpload
+          target="knowledgeArticle"
+          targetId={articleId}
+          currentImageUrl={article.imageUrl}
+          label="記事写真"
+        />
+      </div>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">タイトル *</label>

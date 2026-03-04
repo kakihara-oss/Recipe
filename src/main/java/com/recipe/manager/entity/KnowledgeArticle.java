@@ -61,6 +61,9 @@ public class KnowledgeArticle {
     @Builder.Default
     private List<Recipe> relatedRecipes = new ArrayList<>();
 
+    @Column(name = "image_url", length = 1024)
+    private String imageUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

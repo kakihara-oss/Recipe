@@ -62,6 +62,7 @@ public class RecipeResponse {
         private final Long id;
         private final Long ingredientId;
         private final String ingredientName;
+        private final String ingredientImageUrl;
         private final BigDecimal quantity;
         private final String unit;
         private final String preparationNote;
@@ -151,6 +152,7 @@ public class RecipeResponse {
                 .id(ri.getId())
                 .ingredientId(ri.getIngredient().getId())
                 .ingredientName(ri.getIngredient().getName())
+                .ingredientImageUrl(ri.getIngredient().getImageUrl())
                 .quantity(ri.getQuantity())
                 .unit(ri.getUnit())
                 .preparationNote(ri.getPreparationNote())

@@ -6,8 +6,14 @@ export function useUploadFile() {
   return useMutation({
     mutationFn: ({ file, target, targetId }: { file: File; target: string; targetId: number }) =>
       uploadFile(file, target, targetId),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      if (variables.target === 'knowledgeArticle') {
+        queryClient.invalidateQueries({ queryKey: ['articles'] })
+      }
+      if (variables.target === 'ingredient') {
+        queryClient.invalidateQueries({ queryKey: ['ingredients'] })
+      }
     },
   })
 }
@@ -17,8 +23,14 @@ export function useDeleteFile() {
   return useMutation({
     mutationFn: ({ target, targetId }: { target: string; targetId: number }) =>
       deleteFile(target, targetId),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
+      if (variables.target === 'knowledgeArticle') {
+        queryClient.invalidateQueries({ queryKey: ['articles'] })
+      }
+      if (variables.target === 'ingredient') {
+        queryClient.invalidateQueries({ queryKey: ['ingredients'] })
+      }
     },
   })
 }

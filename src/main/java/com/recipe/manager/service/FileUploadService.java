@@ -2,6 +2,8 @@ package com.recipe.manager.service;
 
 import com.recipe.manager.config.AppProperties;
 import com.recipe.manager.entity.CookingStep;
+import com.recipe.manager.entity.Ingredient;
+import com.recipe.manager.entity.KnowledgeArticle;
 import com.recipe.manager.entity.Recipe;
 import com.recipe.manager.entity.RecipeStatus;
 import com.recipe.manager.entity.Role;
@@ -11,6 +13,8 @@ import com.recipe.manager.exception.BusinessLogicException;
 import com.recipe.manager.exception.ForbiddenException;
 import com.recipe.manager.exception.ResourceNotFoundException;
 import com.recipe.manager.repository.CookingStepRepository;
+import com.recipe.manager.repository.IngredientRepository;
+import com.recipe.manager.repository.KnowledgeArticleRepository;
 import com.recipe.manager.repository.RecipeRepository;
 import com.recipe.manager.repository.ServiceDesignRepository;
 import com.recipe.manager.storage.FileStorageService;
@@ -36,6 +40,8 @@ public class FileUploadService {
     private final RecipeRepository recipeRepository;
     private final CookingStepRepository cookingStepRepository;
     private final ServiceDesignRepository serviceDesignRepository;
+    private final KnowledgeArticleRepository knowledgeArticleRepository;
+    private final IngredientRepository ingredientRepository;
     private final AppProperties appProperties;
 
     @Transactional
@@ -123,6 +129,64 @@ public class FileUploadService {
         deleteOldFile(oldUrl);
     }
 
+    @Transactional
+    public String uploadForKnowledgeArticle(Long articleId, MultipartFile file, User currentUser) {
+        validateFile(file);
+        KnowledgeArticle article = knowledgeArticleRepository.findById(articleId)
+                .orElseThrow(() -> new ResourceNotFoundException("KnowledgeArticle", articleId));
+        validateKnowledgeArticlePermission(currentUser, article);
+
+        String oldUrl = article.getImageUrl();
+        String newUrl = fileStorageService.store(file);
+        article.setImageUrl(newUrl);
+        knowledgeArticleRepository.save(article);
+
+        deleteOldFile(oldUrl);
+        log.info("KnowledgeArticle image uploaded: articleId={}, url={}", articleId, newUrl);
+        return newUrl;
+    }
+
+    @Transactional
+    public void deleteForKnowledgeArticle(Long articleId, User currentUser) {
+        KnowledgeArticle article = knowledgeArticleRepository.findById(articleId)
+                .orElseThrow(() -> new ResourceNotFoundException("KnowledgeArticle", articleId));
+        validateKnowledgeArticlePermission(currentUser, article);
+
+        String oldUrl = article.getImageUrl();
+        article.setImageUrl(null);
+        knowledgeArticleRepository.save(article);
+        deleteOldFile(oldUrl);
+    }
+
+    @Transactional
+    public String uploadForIngredient(Long ingredientId, MultipartFile file, User currentUser) {
+        validateIngredientPermission(currentUser);
+        validateFile(file);
+
+        Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", ingredientId));
+        String oldUrl = ingredient.getImageUrl();
+
+        String newUrl = fileStorageService.store(file);
+        ingredient.setImageUrl(newUrl);
+        ingredientRepository.save(ingredient);
+
+        deleteOldFile(oldUrl);
+        log.info("Ingredient image uploaded: ingredientId={}, url={}", ingredientId, newUrl);
+        return newUrl;
+    }
+
+    @Transactional
+    public void deleteForIngredient(Long ingredientId, User currentUser) {
+        validateIngredientPermission(currentUser);
+        Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", ingredientId));
+        String oldUrl = ingredient.getImageUrl();
+        ingredient.setImageUrl(null);
+        ingredientRepository.save(ingredient);
+        deleteOldFile(oldUrl);
+    }
+
     private Recipe findRecipe(Long recipeId) {
         return recipeRepository.findByIdAndStatusNot(recipeId, RecipeStatus.DELETED)
                 .orElseThrow(() -> new ResourceNotFoundException("Recipe", recipeId));
@@ -152,6 +216,19 @@ public class FileUploadService {
         Role role = user.getRole();
         if (role != Role.CHEF && role != Role.SERVICE && role != Role.PRODUCER) {
             throw new ForbiddenException("サービス設計の編集権限がありません");
+        }
+    }
+
+    private void validateKnowledgeArticlePermission(User user, KnowledgeArticle article) {
+        if (user.getRole() != Role.PRODUCER && !user.getId().equals(article.getAuthor().getId())) {
+            throw new ForbiddenException("この記事の編集権限がありません");
+        }
+    }
+
+    private void validateIngredientPermission(User user) {
+        Role role = user.getRole();
+        if (role != Role.PURCHASER && role != Role.PRODUCER) {
+            throw new ForbiddenException("食材マスタの編集権限がありません");
         }
     }
 
