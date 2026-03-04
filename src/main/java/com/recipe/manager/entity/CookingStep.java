@@ -50,6 +50,9 @@ public class CookingStep {
     @Column(columnDefinition = "TEXT")
     private String tips;
 
+    @Column(name = "image_url", length = 1024)
+    private String imageUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

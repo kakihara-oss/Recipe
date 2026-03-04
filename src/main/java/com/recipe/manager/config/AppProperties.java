@@ -14,4 +14,15 @@ public class AppProperties {
     private String allowedDomain = "example.com";
 
     private String frontendUrl = "http://localhost:3000";
+
+    private Storage storage = new Storage();
+
+    @Getter
+    @Setter
+    public static class Storage {
+        private String provider = "local";
+        private String localBasePath = "./uploads";
+        private String googleDriveFolderId;
+        private String googleDriveCredentialsJson;
+    }
 }

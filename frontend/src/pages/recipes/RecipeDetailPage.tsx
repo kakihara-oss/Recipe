@@ -10,6 +10,7 @@ import {
   canDeleteRecipe,
 } from '../../utils/permissions'
 import RecipeStatusBadge from '../../components/recipe/RecipeStatusBadge'
+import ImageUpload from '../../components/common/ImageUpload'
 import type { RecipeStatus } from '../../types'
 
 type Tab = 'basic' | 'steps' | 'service' | 'experience'
@@ -55,6 +56,13 @@ export default function RecipeDetailPage() {
       <Link to="/recipes" className="mb-4 inline-block text-sm text-blue-600 hover:underline">
         &larr; 一覧に戻る
       </Link>
+
+      {/* Recipe Main Photo */}
+      {recipe.imageUrl && (
+        <div className="mb-4">
+          <img src={recipe.imageUrl} alt={recipe.title} className="h-64 w-full rounded-lg object-cover" />
+        </div>
+      )}
 
       {/* Header */}
       <div className="mb-6">
@@ -199,6 +207,14 @@ export default function RecipeDetailPage() {
                           {step.temperature && <span>温度: {step.temperature}</span>}
                           {step.tips && <span>コツ: {step.tips}</span>}
                         </div>
+                        {step.imageUrl && (
+                          <img src={step.imageUrl} alt={`手順${step.stepNumber}`} className="mt-2 h-32 rounded border object-cover" />
+                        )}
+                        {role && canEditRecipe(role) && (
+                          <div className="mt-2">
+                            <ImageUpload target="cookingStep" targetId={step.id} currentImageUrl={step.imageUrl} />
+                          </div>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -213,6 +229,20 @@ export default function RecipeDetailPage() {
           <div className="space-y-4">
             {recipe.serviceDesign ? (
               <>
+                {recipe.serviceDesign.platingImageUrl && (
+                  <div>
+                    <h4 className="mb-1 text-sm font-semibold text-gray-600">盛り付け写真</h4>
+                    <img src={recipe.serviceDesign.platingImageUrl} alt="盛り付け" className="h-48 rounded-lg object-cover" />
+                  </div>
+                )}
+                {role && canEditServiceDesign(role) && recipe.serviceDesign && (
+                  <ImageUpload
+                    target="serviceDesign"
+                    targetId={recipe.serviceDesign.id}
+                    currentImageUrl={recipe.serviceDesign.platingImageUrl}
+                    label="盛り付け写真"
+                  />
+                )}
                 {recipe.serviceDesign.platingInstructions && (
                   <div><h4 className="mb-1 text-sm font-semibold text-gray-600">盛り付け指示</h4><p className="whitespace-pre-wrap text-gray-800">{recipe.serviceDesign.platingInstructions}</p></div>
                 )}

@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useRecipe, useUpdateRecipe } from '../../hooks/useRecipes'
-import type { UpdateRecipeRequest } from '../../types'
+import ImageUpload from '../../components/common/ImageUpload'
+import AiImproveButton from '../../components/recipe/AiImproveButton'
+import AiChatPanel from '../../components/recipe/AiChatPanel'
+import type { UpdateRecipeRequest, AiRecipeDraftResponse } from '../../types'
 
 export default function RecipeEditPage() {
   const { id } = useParams<{ id: string }>()
@@ -31,6 +34,17 @@ export default function RecipeEditPage() {
   if (isLoading) return <div className="py-12 text-center text-gray-500">読み込み中...</div>
   if (!recipe) return <div className="py-12 text-center text-gray-400">レシピが見つかりません</div>
 
+  const recipeContext = `${title} - ${category} - ${concept}`
+
+  const handleApplyAiDraft = (draft: AiRecipeDraftResponse) => {
+    if (draft.title) setTitle(draft.title)
+    if (draft.description) setDescription(draft.description)
+    if (draft.category) setCategory(draft.category)
+    if (draft.servings) setServings(String(draft.servings))
+    if (draft.concept) setConcept(draft.concept)
+    if (draft.story) setStory(draft.story)
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const req: UpdateRecipeRequest = {
@@ -52,6 +66,17 @@ export default function RecipeEditPage() {
         &larr; 詳細に戻る
       </Link>
       <h2 className="mb-6 text-2xl font-bold text-gray-800">レシピ編集</h2>
+
+      {/* Recipe main photo */}
+      <div className="mb-6">
+        <ImageUpload
+          target="recipe"
+          targetId={recipeId}
+          currentImageUrl={recipe.imageUrl}
+          label="代表写真"
+        />
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">タイトル *</label>
@@ -65,7 +90,16 @@ export default function RecipeEditPage() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">説明</label>
+          <div className="mb-1 flex items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700">説明</label>
+            <AiImproveButton
+              fieldName="description"
+              fieldLabel="説明"
+              currentValue={description}
+              recipeContext={recipeContext}
+              onApply={setDescription}
+            />
+          </div>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -97,7 +131,16 @@ export default function RecipeEditPage() {
           </div>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">コンセプト</label>
+          <div className="mb-1 flex items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700">コンセプト</label>
+            <AiImproveButton
+              fieldName="concept"
+              fieldLabel="コンセプト"
+              currentValue={concept}
+              recipeContext={recipeContext}
+              onApply={setConcept}
+            />
+          </div>
           <textarea
             value={concept}
             onChange={(e) => setConcept(e.target.value)}
@@ -106,7 +149,16 @@ export default function RecipeEditPage() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">ストーリー</label>
+          <div className="mb-1 flex items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700">ストーリー</label>
+            <AiImproveButton
+              fieldName="story"
+              fieldLabel="ストーリー"
+              currentValue={story}
+              recipeContext={recipeContext}
+              onApply={setStory}
+            />
+          </div>
           <textarea
             value={story}
             onChange={(e) => setStory(e.target.value)}
@@ -131,6 +183,19 @@ export default function RecipeEditPage() {
           </button>
         </div>
       </form>
+
+      {/* AI Chat Panel */}
+      <AiChatPanel
+        currentRecipe={{
+          title,
+          description: description || undefined,
+          category: category || undefined,
+          servings: servings ? Number(servings) : undefined,
+          concept: concept || undefined,
+          story: story || undefined,
+        }}
+        onApply={handleApplyAiDraft}
+      />
     </div>
   )
 }

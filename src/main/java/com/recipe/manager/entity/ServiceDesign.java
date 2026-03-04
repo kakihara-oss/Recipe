@@ -53,6 +53,9 @@ public class ServiceDesign {
     @Column(columnDefinition = "TEXT")
     private String storytelling;
 
+    @Column(name = "plating_image_url", length = 1024)
+    private String platingImageUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

@@ -29,6 +29,11 @@ spring:
             client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: openid, profile, email
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 server:
   port: 8080
 
@@ -38,6 +43,11 @@ app:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   allowed-domain: ${ALLOWED_DOMAIN:example.com}
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  storage:
+    provider: ${STORAGE_PROVIDER:local}
+    local-base-path: ${STORAGE_LOCAL_PATH:./uploads}
+    google-drive-folder-id: ${GOOGLE_DRIVE_FOLDER_ID:}
+    google-drive-credentials-json: ${GOOGLE_DRIVE_CREDENTIALS_JSON:}
 
 logging:
   level:

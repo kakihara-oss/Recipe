@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCreateRecipe } from '../../hooks/useRecipes'
-import type { CreateRecipeRequest } from '../../types'
+import AiGenerateButton from '../../components/recipe/AiGenerateButton'
+import AiGenerateFromRecipeButton from '../../components/recipe/AiGenerateFromRecipeButton'
+import type { CreateRecipeRequest, AiRecipeDraftResponse } from '../../types'
 
 interface StepInput {
   stepNumber: number
@@ -24,6 +26,24 @@ export default function RecipeCreatePage() {
   const [steps, setSteps] = useState<StepInput[]>([
     { stepNumber: 1, description: '', durationMinutes: '', temperature: '', tips: '' },
   ])
+
+  const applyAiDraft = (draft: AiRecipeDraftResponse) => {
+    if (draft.title) setTitle(draft.title)
+    if (draft.description) setDescription(draft.description)
+    if (draft.category) setCategory(draft.category)
+    if (draft.servings) setServings(String(draft.servings))
+    if (draft.concept) setConcept(draft.concept)
+    if (draft.story) setStory(draft.story)
+    if (draft.cookingSteps && draft.cookingSteps.length > 0) {
+      setSteps(draft.cookingSteps.map((s, i) => ({
+        stepNumber: s.stepNumber ?? i + 1,
+        description: s.description ?? '',
+        durationMinutes: s.durationMinutes ? String(s.durationMinutes) : '',
+        temperature: s.temperature ?? '',
+        tips: s.tips ?? '',
+      })))
+    }
+  }
 
   const addStep = () => {
     setSteps([...steps, {
@@ -70,7 +90,14 @@ export default function RecipeCreatePage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h2 className="mb-6 text-2xl font-bold text-gray-800">新規レシピ作成</h2>
+      <h2 className="mb-4 text-2xl font-bold text-gray-800">新規レシピ作成</h2>
+
+      {/* AI Generate Buttons */}
+      <div className="mb-6 flex flex-wrap gap-3">
+        <AiGenerateButton onApply={applyAiDraft} />
+        <AiGenerateFromRecipeButton onApply={applyAiDraft} />
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">タイトル *</label>
@@ -187,6 +214,8 @@ export default function RecipeCreatePage() {
             + 手順を追加
           </button>
         </div>
+
+        {/* AI generated ingredients info */}
 
         <div className="flex justify-end gap-3 pt-4">
           <button

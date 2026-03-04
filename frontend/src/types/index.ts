@@ -32,6 +32,7 @@ export interface CookingStepInfo {
   durationMinutes: number | null
   temperature: string | null
   tips: string | null
+  imageUrl: string | null
 }
 
 export interface IngredientInfo {
@@ -52,6 +53,7 @@ export interface ServiceDesignInfo {
   stagingMethod: string | null
   timing: string | null
   storytelling: string | null
+  platingImageUrl: string | null
 }
 
 export interface ExperienceDesignInfo {
@@ -78,6 +80,7 @@ export interface RecipeResponse {
   status: RecipeStatus
   concept: string | null
   story: string | null
+  imageUrl: string | null
   createdBy: CreatedByInfo
   cookingSteps: CookingStepInfo[]
   ingredients: IngredientInfo[]
@@ -94,6 +97,7 @@ export interface RecipeListResponse {
   category: string | null
   servings: number | null
   status: RecipeStatus
+  imageUrl: string | null
   createdByName: string
   createdAt: string
   updatedAt: string
@@ -305,4 +309,80 @@ export interface GenerateFeedbackSummaryRequest {
 
 export interface UpdateRoleRequest {
   role: Role
+}
+
+// ===== File Upload =====
+
+export interface FileUploadResponse {
+  url: string
+  fileName: string
+  fileSize: number
+}
+
+// ===== Recipe AI =====
+
+export interface AiRecipeDraftResponse {
+  title: string
+  description: string | null
+  category: string | null
+  servings: number | null
+  concept: string | null
+  story: string | null
+  cookingSteps: {
+    stepNumber: number
+    description: string
+    durationMinutes: number | null
+    temperature: string | null
+    tips: string | null
+  }[]
+  ingredients: {
+    name: string
+    quantity: string | null
+    preparationNote: string | null
+  }[]
+}
+
+export interface AiImproveFieldResponse {
+  fieldName: string
+  improvedValue: string
+  explanation: string
+}
+
+export interface AiGenerateRecipeRequest {
+  theme: string
+}
+
+export interface AiGenerateFromRecipeRequest {
+  recipeId: number
+  arrangementInstruction?: string
+}
+
+export interface AiImproveFieldRequest {
+  fieldName: string
+  currentValue?: string
+  recipeContext?: string
+}
+
+export interface AiModifyRecipeRequest {
+  instruction: string
+  currentRecipe?: {
+    title?: string
+    description?: string
+    category?: string
+    servings?: number
+    concept?: string
+    story?: string
+    cookingSteps?: {
+      stepNumber: number
+      description: string
+      durationMinutes?: number
+      temperature?: string
+      tips?: string
+    }[]
+    ingredients?: {
+      name: string
+      quantity?: string
+      preparationNote?: string
+    }[]
+  }
 }

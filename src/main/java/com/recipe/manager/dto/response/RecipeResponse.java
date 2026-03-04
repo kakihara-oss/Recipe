@@ -27,6 +27,7 @@ public class RecipeResponse {
     private final RecipeStatus status;
     private final String concept;
     private final String story;
+    private final String imageUrl;
     private final CreatedByInfo createdBy;
     private final List<CookingStepInfo> cookingSteps;
     private final List<IngredientInfo> ingredients;
@@ -52,6 +53,7 @@ public class RecipeResponse {
         private final Integer durationMinutes;
         private final String temperature;
         private final String tips;
+        private final String imageUrl;
     }
 
     @Getter
@@ -76,6 +78,7 @@ public class RecipeResponse {
         private final String stagingMethod;
         private final String timing;
         private final String storytelling;
+        private final String platingImageUrl;
     }
 
     @Getter
@@ -99,6 +102,7 @@ public class RecipeResponse {
                 .status(recipe.getStatus())
                 .concept(recipe.getConcept())
                 .story(recipe.getStory())
+                .imageUrl(recipe.getImageUrl())
                 .createdBy(CreatedByInfo.builder()
                         .id(recipe.getCreatedBy().getId())
                         .name(recipe.getCreatedBy().getName())
@@ -138,6 +142,7 @@ public class RecipeResponse {
                 .durationMinutes(step.getDurationMinutes())
                 .temperature(step.getTemperature())
                 .tips(step.getTips())
+                .imageUrl(step.getImageUrl())
                 .build();
     }
 
@@ -162,6 +167,7 @@ public class RecipeResponse {
                 .stagingMethod(sd.getStagingMethod())
                 .timing(sd.getTiming())
                 .storytelling(sd.getStorytelling())
+                .platingImageUrl(sd.getPlatingImageUrl())
                 .build();
     }
 

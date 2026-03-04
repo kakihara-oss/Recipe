@@ -17,6 +17,7 @@ public class RecipeListResponse {
     private final String category;
     private final Integer servings;
     private final RecipeStatus status;
+    private final String imageUrl;
     private final String createdByName;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -29,6 +30,7 @@ public class RecipeListResponse {
                 .category(recipe.getCategory())
                 .servings(recipe.getServings())
                 .status(recipe.getStatus())
+                .imageUrl(recipe.getImageUrl())
                 .createdByName(recipe.getCreatedBy().getName())
                 .createdAt(recipe.getCreatedAt())
                 .updatedAt(recipe.getUpdatedAt())

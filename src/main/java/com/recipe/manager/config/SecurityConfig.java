@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/dev/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/users/*/role")
                             .hasRole(Constants.ROLE_PRODUCER)
                         .requestMatchers(HttpMethod.GET, "/api/users")

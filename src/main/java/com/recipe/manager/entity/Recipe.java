@@ -61,6 +61,9 @@ public class Recipe {
     @Column(columnDefinition = "TEXT")
     private String story;
 
+    @Column(name = "image_url", length = 1024)
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;

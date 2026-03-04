@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useRecipe, useUpdateServiceDesign } from '../../hooks/useRecipes'
+import ImageUpload from '../../components/common/ImageUpload'
 import type { UpdateServiceDesignRequest } from '../../types'
 
 export default function ServiceDesignEditPage() {
@@ -66,6 +67,16 @@ export default function ServiceDesignEditPage() {
       </Link>
       <h2 className="mb-1 text-2xl font-bold text-gray-800">サービス設計編集</h2>
       <p className="mb-6 text-sm text-gray-500">{recipe.title}</p>
+      {recipe.serviceDesign && (
+        <div className="mb-6">
+          <ImageUpload
+            target="serviceDesign"
+            targetId={recipe.serviceDesign.id}
+            currentImageUrl={recipe.serviceDesign.platingImageUrl}
+            label="盛り付け写真"
+          />
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-5">
         {fields.map(({ key, label }) => (
           <div key={key}>
